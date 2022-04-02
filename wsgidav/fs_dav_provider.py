@@ -198,6 +198,12 @@ class FolderResource(DAVCollection):
     def get_last_modified(self):
         return self.file_stat[stat.ST_MTIME]
 
+    def get_quota_available_bytes(self):
+        return shutil.disk_usage(self._file_path).free
+
+    def get_quota_used_bytes(self):
+        return shutil.disk_usage(self._file_path).used
+
     def get_member_names(self):
         """Return list of direct collection member names (utf-8 encoded).
 

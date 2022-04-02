@@ -294,6 +294,34 @@ class _DAVResource(ABC):
         """
         return None
 
+    def get_quota(self):
+        """
+        Return the quota bytes
+        """
+        if not self.is_collection:
+            return None
+        return 0
+
+    def get_quota_available_bytes(self):
+        """
+        See http://www.webdav.org/specs/rfc4331.html#quota-available-bytes
+
+        Return the available bytes.
+        """
+        if not self.is_collection:
+            return None
+        return -1
+
+    def get_quota_used_bytes(self):
+        """
+        See http://www.webdav.org/specs/rfc4331.html#quota-used-bytes
+
+        Return the amount of space used by this resource.
+        """
+        if not self.is_collection:
+            return None
+        return 0
+
     def set_last_modified(self, dest_path, time_stamp, *, dry_run):
         """Set last modified time for destPath to timeStamp on epoch-format"""
         raise NotImplementedError
@@ -720,6 +748,12 @@ class _DAVResource(ABC):
                 return self.get_etag()
             elif name == "{DAV:}displayname" and self.get_display_name() is not None:
                 return self.get_display_name()
+            elif name == "{DAV:}quota" and self.get_quota() is not None:
+                return str(self.get_quota())
+            elif name == "{DAV:}quota-used-bytes" and self.get_quota_used_bytes() is not None:
+                return str(self.get_quota_used_bytes())
+            elif name == "{DAV:}quota-available-bytes" and self.get_quota_available_bytes() is not None:
+                return str(self.get_quota_available_bytes())
 
             # Unsupported, no persistence available, or property not found
             raise DAVError(HTTP_NOT_FOUND)
